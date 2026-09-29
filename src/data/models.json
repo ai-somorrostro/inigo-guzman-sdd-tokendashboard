@@ -1,0 +1,154 @@
+[
+  {
+    "id": "mistral-small-3-1",
+    "name": "Mistral Small 3.1",
+    "provider": "Mistral AI",
+    "family": "Mistral Small",
+    "pricing": { "inputPerM": 0.1, "outputPerM": 0.3, "cachedInputPerM": null },
+    "contextWindow": 128000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": { "valueMs": null },
+    "capturedAt": "2026-09-26"
+  },
+  {
+    "id": "gpt-4o-mini",
+    "name": "GPT-4o mini",
+    "provider": "OpenAI",
+    "family": "GPT-4o",
+    "pricing": { "inputPerM": 0.15, "outputPerM": 0.6, "cachedInputPerM": 0.075 },
+    "contextWindow": 128000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 350,
+      "percentile": "p50",
+      "source": "artificialanalysis.ai",
+      "capturedAt": "2026-09-20",
+      "conditions": "short prompt, streaming"
+    },
+    "capturedAt": "2026-09-20"
+  },
+  {
+    "id": "claude-haiku-4-5",
+    "name": "Claude Haiku 4.5",
+    "provider": "Anthropic",
+    "family": "Claude Haiku",
+    "pricing": { "inputPerM": 1, "outputPerM": 5, "cachedInputPerM": 0.1 },
+    "contextWindow": 200000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 980,
+      "percentile": "p95",
+      "source": "kunalganglani.com",
+      "capturedAt": "2026-09-25",
+      "conditions": "single run"
+    },
+    "capturedAt": "2026-09-25"
+  },
+  {
+    "id": "gpt-4.1",
+    "name": "GPT-4.1",
+    "provider": "OpenAI",
+    "family": "GPT-4.1",
+    "pricing": { "inputPerM": 2, "outputPerM": 8, "cachedInputPerM": 0.5 },
+    "contextWindow": 1047576,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 410,
+      "percentile": "p50",
+      "source": "artificialanalysis.ai",
+      "capturedAt": "2026-09-19",
+      "conditions": "short prompt, streaming"
+    },
+    "capturedAt": "2026-09-19"
+  },
+  {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "provider": "OpenAI",
+    "family": "GPT-4o",
+    "pricing": { "inputPerM": 2.5, "outputPerM": 10, "cachedInputPerM": 1.25 },
+    "contextWindow": 128000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 380,
+      "percentile": "p50",
+      "source": "artificialanalysis.ai",
+      "capturedAt": "2026-09-20",
+      "conditions": "short prompt, streaming"
+    },
+    "capturedAt": "2026-09-20"
+  },
+  {
+    "id": "claude-sonnet-4-5",
+    "name": "Claude Sonnet 4.5",
+    "provider": "Anthropic",
+    "family": "Claude Sonnet",
+    "pricing": { "inputPerM": 3, "outputPerM": 15, "cachedInputPerM": 0.3 },
+    "contextWindow": 200000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 610,
+      "percentile": "p50",
+      "source": "artificialanalysis.ai",
+      "capturedAt": "2026-09-18",
+      "conditions": "short prompt, streaming"
+    },
+    "capturedAt": "2026-09-18"
+  },
+  {
+    "id": "gpt-5-6-sol",
+    "name": "GPT-5.6 Sol",
+    "provider": "OpenAI",
+    "family": "GPT-5",
+    "pricing": { "inputPerM": 5, "outputPerM": 30, "cachedInputPerM": 1.25 },
+    "contextWindow": 1100000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 17870,
+      "percentile": "median",
+      "source": "artificialanalysis.ai",
+      "capturedAt": "2026-09-28",
+      "conditions": "10k input tokens"
+    },
+    "capturedAt": "2026-09-28"
+  },
+  {
+    "id": "claude-opus-4-1",
+    "name": "Claude Opus 4.1",
+    "provider": "Anthropic",
+    "family": "Claude Opus",
+    "pricing": { "inputPerM": 15, "outputPerM": 75, "cachedInputPerM": 1.5 },
+    "contextWindow": 200000,
+    "modalities": { "input": ["text", "image"], "output": ["text"] },
+    "ttft": {
+      "valueMs": 540,
+      "percentile": "p90",
+      "source": "llm-stats.com",
+      "capturedAt": "2026-08-30",
+      "conditions": "long prompt, streaming"
+    },
+    "capturedAt": "2026-08-30"
+  },
+  {
+    "id": "llama-3.3-70b-instruct",
+    "name": "Llama 3.3 70B Instruct",
+    "provider": "Meta",
+    "family": "Llama 3",
+    "pricing": { "inputPerM": null, "outputPerM": null, "cachedInputPerM": null },
+    "contextWindow": 131072,
+    "modalities": { "input": ["text"], "output": ["text"] },
+    "ttft": { "valueMs": null },
+    "capturedAt": "2026-09-12"
+  },
+  {
+    "id": "kimi-k2-6",
+    "name": "Kimi K2.6",
+    "provider": "Moonshot AI",
+    "family": "Kimi K2",
+    "pricing": { "inputPerM": null, "outputPerM": null, "cachedInputPerM": null },
+    "contextWindow": 262144,
+    "modalities": { "input": ["text"], "output": ["text"] },
+    "ttft": { "valueMs": null },
+    "capturedAt": "2026-09-28"
+  }
+]
