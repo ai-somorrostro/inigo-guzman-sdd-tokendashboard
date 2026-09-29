@@ -29,8 +29,9 @@ function selectFilter(value: string) {
 }
 
 describe('sorting by price', () => {
-  it('defaults to input price ascending with unknown prices last', () => {
+  it('defaults to input price ascending with unknown prices last', async () => {
     render(<App />)
+    await screen.findByRole('table')
     const prices = inputPrices()
     const known = prices.filter((price): price is number => price !== null)
     const firstUnknown = prices.findIndex((price) => price === null)
@@ -41,8 +42,9 @@ describe('sorting by price', () => {
     expect(screen.getByRole('columnheader', { name: '$ / 1M in' })).toHaveAttribute('aria-sort', 'ascending')
   })
 
-  it('sorts by output price and keeps unknown prices at the end', () => {
+  it('sorts by output price and keeps unknown prices at the end', async () => {
     render(<App />)
+    await screen.findByRole('table')
     fireEvent.click(screen.getByRole('button', { name: '$ / 1M out' }))
     expect(screen.getByRole('columnheader', { name: '$ / 1M out' })).toHaveAttribute('aria-sort', 'ascending')
     const prices = bodyRows().map((row) => {
@@ -57,8 +59,9 @@ describe('sorting by price', () => {
     expect(prices.slice(firstUnknown).every((price) => price === null)).toBe(true)
   })
 
-  it('toggles the input price column to descending on a second click', () => {
+  it('toggles the input price column to descending on a second click', async () => {
     render(<App />)
+    await screen.findByRole('table')
     fireEvent.click(screen.getByRole('button', { name: '$ / 1M in' }))
     expect(screen.getByRole('columnheader', { name: '$ / 1M in' })).toHaveAttribute('aria-sort', 'descending')
     const prices = inputPrices()
@@ -71,8 +74,9 @@ describe('sorting by price', () => {
 })
 
 describe('filtering by input modality', () => {
-  it('keeps only models whose input list includes the selection', () => {
+  it('keeps only models whose input list includes the selection', async () => {
     render(<App />)
+    await screen.findByRole('table')
     selectFilter('image')
     const textOnly = catalog.filter((model) => model.modalities.input.join(',') === 'text')
     expect(textOnly.length).toBeGreaterThan(0)
@@ -86,8 +90,9 @@ describe('filtering by input modality', () => {
     }
   })
 
-  it('shows an explicit empty result when the filter matches no model', () => {
+  it('shows an explicit empty result when the filter matches no model', async () => {
     render(<App />)
+    await screen.findByRole('table')
     expect(catalog.some((model) => model.modalities.input.includes('video'))).toBe(false)
     selectFilter('video')
     expect(screen.getByRole('status')).toHaveTextContent(
