@@ -4,33 +4,33 @@ import {
   priceOf,
   ttftOf,
   type PriceColumn,
+  type SortableColumn,
   type SortDirection,
 } from '../catalog/accessors'
 import type { Model } from '../catalog/schema'
 import { isCaptureStale } from '../catalog/staleness'
 import { Unknown } from './Unknown'
 
-export type SortState = { column: PriceColumn; direction: SortDirection }
+export type SortState = { column: SortableColumn; direction: SortDirection }
 
 type Props = {
   models: Model[]
   sort?: SortState
-  onSortChange?: (column: PriceColumn) => void
+  onSortChange?: (column: SortableColumn) => void
+  onSelectModel?: (model: Model) => void
+  selectedModelId?: string | null
 }
 
-const PRICE_HEADERS: { column: PriceColumn; label: string }[] = [
-  { column: 'inputPerM', label: '$ / 1M in' },
-  { column: 'outputPerM', label: '$ / 1M out' },
-]
-
-const OTHER_HEADERS = [
-  'Model',
-  'Provider',
-  'TTFT',
-  'Context',
-  'Input modalities',
-  'Output modalities',
-  'Captured',
+const HEADERS_CONFIG: { column: SortableColumn; label: string; isNum?: boolean }[] = [
+  { column: 'name', label: 'Model' },
+  { column: 'provider', label: 'Provider' },
+  { column: 'inputPerM', label: '$ / 1M in', isNum: true },
+  { column: 'outputPerM', label: '$ / 1M out', isNum: true },
+  { column: 'ttft', label: 'TTFT' },
+  { column: 'contextWindow', label: 'Context', isNum: true },
+  { column: 'inputModalities', label: 'Input modalities' },
+  { column: 'outputModalities', label: 'Output modalities' },
+  { column: 'capturedAt', label: 'Captured' },
 ]
 
 function PriceCell({ model, column }: { model: Model; column: PriceColumn }) {
@@ -66,7 +66,10 @@ function TtftCell({ model }: { model: Model }) {
       onBlur={() => setOpen(false)}
     >
       <span className="ttft-value">{formatTtft(value)}</span>
-      <span className={open ? 'ttft-provenance visible' : 'ttft-provenance'} role={open ? 'tooltip' : undefined}>
+      <span
+        className={open ? 'ttft-provenance visible' : 'ttft-provenance'}
+        role={open ? 'tooltip' : undefined}
+      >
         {provenance}
       </span>
     </td>
@@ -74,7 +77,12 @@ function TtftCell({ model }: { model: Model }) {
 }
 
 function ModalityCell({ modalities }: { modalities: string[] }) {
-  if (modalities.length === 0) return <td><Unknown /></td>
+  if (modalities.length === 0)
+    return (
+      <td>
+        <Unknown />
+      </td>
+    )
   return (
     <td>
       {modalities.map((modality, index) => (
@@ -87,83 +95,128 @@ function ModalityCell({ modalities }: { modalities: string[] }) {
   )
 }
 
-function PriceHeader({
+function SortableHeader({
   column,
   label,
+  isNum,
   sort,
   onSortChange,
 }: {
-  column: PriceColumn
+  column: SortableColumn
   label: string
+  isNum?: boolean
   sort?: SortState
-  onSortChange?: (column: PriceColumn) => void
+  onSortChange?: (column: SortableColumn) => void
 }) {
-  if (!onSortChange) {
-    return <th scope="col" className="num">{label}</th>
-  }
   const isActive = sort?.column === column
+  const sortDirection = isActive
+    ? sort.direction === 'asc'
+      ? 'ascending'
+      : 'descending'
+    : 'none'
+
+  if (!onSortChange) {
+    return (
+      <th scope="col" className={isNum ? 'num' : undefined}>
+        {label}
+      </th>
+    )
+  }
+
   return (
     <th
       scope="col"
-      className="num"
-      aria-sort={isActive ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
+      className={isNum ? 'num' : undefined}
+      aria-sort={sortDirection}
     >
-      <button type="button" onClick={() => onSortChange(column)}>
-        {label}
+      <button
+        type="button"
+        onClick={() => onSortChange(column)}
+        className="th-sort-btn"
+        title={`Sort by ${label}`}
+      >
+        <span>{label}</span>
+        <span className="sort-arrow" aria-hidden="true">
+          {isActive ? (sort.direction === 'asc' ? ' ▲' : ' ▼') : ''}
+        </span>
       </button>
     </th>
   )
 }
 
-export function ComparisonTable({ models, sort, onSortChange }: Props) {
+export function ComparisonTable({
+  models,
+  sort,
+  onSortChange,
+  onSelectModel,
+  selectedModelId,
+}: Props) {
   return (
     <div className="table-shell">
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">{OTHER_HEADERS[0]}</th>
-          <th scope="col">{OTHER_HEADERS[1]}</th>
-          {PRICE_HEADERS.map(({ column, label }) => (
-            <PriceHeader key={column} column={column} label={label} sort={sort} onSortChange={onSortChange} />
-          ))}
-          {OTHER_HEADERS.slice(2).map((header) => (
-            <th key={header} scope="col" className={header === 'Context' ? 'num' : undefined}>
-              {header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {models.map((model) => {
-          const stale = isCaptureStale(model.capturedAt)
-          return (
-            <tr key={model.id} className={stale ? 'row-stale' : undefined}>
-              <td className="cell-model">{model.name}</td>
-              <td className="cell-provider">{model.provider}</td>
-              <PriceCell model={model} column="inputPerM" />
-              <PriceCell model={model} column="outputPerM" />
-              <TtftCell model={model} />
-              <td className="num">{formatContext(model.contextWindow)}</td>
-              <ModalityCell modalities={model.modalities.input} />
-              <ModalityCell modalities={model.modalities.output} />
-              <td className="cell-captured">
-                <time
-                  dateTime={model.capturedAt}
-                  title={stale ? 'Older than 90 days' : undefined}
-                >
-                  {model.capturedAt}
-                </time>
-                {stale && (
-                  <span className="stale-badge" title="Older than 90 days">
-                    stale
-                  </span>
-                )}
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+      <table>
+        <thead>
+          <tr>
+            {HEADERS_CONFIG.map(({ column, label, isNum }) => (
+              <SortableHeader
+                key={column}
+                column={column}
+                label={label}
+                isNum={isNum}
+                sort={sort}
+                onSortChange={onSortChange}
+              />
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {models.map((model) => {
+            const stale = isCaptureStale(model.capturedAt)
+            const isSelected = selectedModelId === model.id
+            return (
+              <tr
+                key={model.id}
+                className={[
+                  stale ? 'row-stale' : '',
+                  isSelected ? 'row-selected' : '',
+                  onSelectModel ? 'row-clickable' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={() => onSelectModel?.(model)}
+                tabIndex={onSelectModel ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (onSelectModel && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    onSelectModel(model)
+                  }
+                }}
+              >
+                <td className="cell-model">{model.name}</td>
+                <td className="cell-provider">{model.provider}</td>
+                <PriceCell model={model} column="inputPerM" />
+                <PriceCell model={model} column="outputPerM" />
+                <TtftCell model={model} />
+                <td className="num">{formatContext(model.contextWindow)}</td>
+                <ModalityCell modalities={model.modalities.input} />
+                <ModalityCell modalities={model.modalities.output} />
+                <td className="cell-captured">
+                  <time
+                    dateTime={model.capturedAt}
+                    title={stale ? 'Older than 90 days' : undefined}
+                  >
+                    {model.capturedAt}
+                  </time>
+                  {stale && (
+                    <span className="stale-badge" title="Older than 90 days">
+                      stale
+                    </span>
+                  )}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
